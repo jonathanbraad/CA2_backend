@@ -2,6 +2,7 @@ package rest;
 
 import com.google.gson.Gson;
 import dtos.CatfactDTO;
+import dtos.CombinedFactsDTO;
 import dtos.DogfactDTO;
 import utils.HttpUtils;
 
@@ -18,6 +19,23 @@ public class FactResource {
     @Context
     private UriInfo context;
 
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getFacts() throws IOException {
+        Gson gson = new Gson();
+        DogfactDTO dogfactDTO = new DogfactDTO();
+        String dog = HttpUtils.fetchData(dogfactDTO.getUrl());
+        DogfactDTO dogDTO = gson.fromJson(dog, DogfactDTO.class);
+
+        CatfactDTO catfactDTO = new CatfactDTO();
+        String cat = HttpUtils.fetchData(catfactDTO.getUrl());
+        CatfactDTO catDTO = gson.fromJson(cat, CatfactDTO.class);
+
+        CombinedFactsDTO combinedFactsDTO = new CombinedFactsDTO(catDTO, dogDTO);
+
+        return gson.toJson(combinedFactsDTO);
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
